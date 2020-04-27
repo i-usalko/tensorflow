@@ -74,6 +74,8 @@ class InterpreterWrapper {
   // should be the interpreter object providing the memory.
   PyObject* tensor(PyObject* base_object, int i);
 
+  PyObject* SetNumThreads(int i);
+
   // Adds a delegate to the interpreter.
   PyObject* ModifyGraphWithDelegate(TfLiteDelegate* delegate);
 

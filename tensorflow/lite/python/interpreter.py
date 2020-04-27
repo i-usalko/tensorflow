@@ -187,7 +187,8 @@ class Interpreter(object):
   def __init__(self,
                model_path=None,
                model_content=None,
-               experimental_delegates=None):
+               experimental_delegates=None,
+               num_threads=None):
     """Constructor.
 
     Args:
@@ -196,6 +197,9 @@ class Interpreter(object):
       experimental_delegates: Experimental. Subject to change. List of
         [TfLiteDelegate](https://www.tensorflow.org/lite/performance/delegates)
         objects returned by lite.load_delegate().
+      num_threads: Set the number of threads used by TFLite kernels.
+        If not set, kernels are running single-threaded. Note that currently,
+        only some kernels, such as conv, are multithreaded.
 
     Raises:
       ValueError: If the interpreter was unable to create.
@@ -218,6 +222,11 @@ class Interpreter(object):
       raise ValueError('`model_path` or `model_content` must be specified.')
     else:
       raise ValueError('Can\'t both provide `model_path` and `model_content`')
+
+    if num_threads:
+      if not isinstance(num_threads, int):
+        raise ValueError('type of num_threads should be int')
+      self._interpreter.SetNumThreads(num_threads)
 
     # Each delegate is a wrapper that owns the delegates that have been loaded
     # as plugins. The interpreter wrapper will be using them, but we need to

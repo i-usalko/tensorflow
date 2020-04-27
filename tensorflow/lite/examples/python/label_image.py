@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import time
 import numpy as np
 
 from PIL import Image
@@ -51,9 +52,16 @@ if __name__ == '__main__':
   parser.add_argument('--input_mean', default=127.5, help='input_mean')
   parser.add_argument(
       '--input_std', default=127.5, help='input standard deviation')
+  parser.add_argument(
+      '--num_threads',
+      default=1,
+      help='number of threads')
+
   args = parser.parse_args()
 
-  interpreter = Interpreter(model_path=args.model_file)
+  interpreter = Interpreter(
+          model_path=args.model_file,
+          num_threads=int(args.num_threads))
   interpreter.allocate_tensors()
 
   input_details = interpreter.get_input_details()
@@ -75,7 +83,10 @@ if __name__ == '__main__':
 
   interpreter.set_tensor(input_details[0]['index'], input_data)
 
+  start_time = time.time()
   interpreter.invoke()
+  stop_time time.time()
+
 
   output_data = interpreter.get_tensor(output_details[0]['index'])
   results = np.squeeze(output_data)
@@ -87,3 +98,5 @@ if __name__ == '__main__':
       print('{:08.6f}: {}'.format(float(results[i]), labels[i]))
     else:
       print('{:08.6f}: {}'.format(float(results[i] / 255.0), labels[i]))
+
+  print("time: ", stop_time - start_time)
